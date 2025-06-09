@@ -1,8 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Button from './Button.jsx';
 import { TiLocationArrow } from 'react-icons/ti';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/all';
+gsap.registerPlugin(ScrollTrigger)
 
 export const Hero = () => {
   const [videoIndex, setVideoIndex] = useState(1);
@@ -24,6 +26,14 @@ setLoadedVideos((prev) => prev + 1);
     setHasClicked(true);
     setVideoIndex(upcomingVideoIndex);
   };
+
+
+  useEffect(()=>{
+    if(loadedVideos === totalVideos-1){
+      setIsLoading(false);
+    }
+
+  },[loadedVideos])
 
   const getVideoSrc = (index) => `videos/hero-${index}.mp4`;
 
@@ -53,9 +63,41 @@ setLoadedVideos((prev) => prev + 1);
       revertOnUpdate: true,
     }
   );
+  useGSAP(()=>{
+gsap.set('#video-frame',{
+clipPath:' polygon(8% 3%, 78% 5%, 91% 89%, 0 100%)',
+borderRadius: '0% 0% 40% 10%',
+
+})
+
+gsap.from('#video-frame',{
+  clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0 100%)',
+  borderRadius: '0% 0% 0% 0%',
+ 
+  ease: 'power1.inOut',
+  scrollTrigger:{
+trigger:'#video-frame',
+start:'center center',
+end:'bottom center',
+scrub: true,
+
+  }
+})
+
+})
+
   return (
     <div className="relative h-dvh w-screen overflow-x-hidden">
-      <div id="video-frame" className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75">
+      {isLoading &&(
+        <div className=" absolute flex-center z-[100] h-dvh w-screen overflow-hidden bg-blue-75" >
+           <div className="three-body">
+           <div className="three-body__dot"></div>
+           <div className="three-body__dot"></div>
+           <div className="three-body__dot"></div>
+          </div>
+        </div>
+      )}
+      <div id="video-frame" className="relative z-10 h-dvh w-screen overflow-hidden  bg-blue-75">
         <div>
           <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
             <div onClick={handleClick} className="origin-center scale-50 opacity-0 transition-all duretion-500 ease-in hover:scale-100 hover:opacity-100">
@@ -90,13 +132,11 @@ ref={nextVref}
     />
     
         </div>
-        <h1 className=" absolute bottom-5 right-5 z-40 text-blue-75 uppercase font-zentry font-black text-5xl sm:right-10 sm:text-7xl md:text-9xl lg:text-[8rem]">
-          G<b>A</b>MING
-        </h1>
+        <h1 className=" special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75">G<b>A</b>MING</h1>
          <div className="absolute left-0 top-0 z-40 size-full">
           <div className="mt-24 px-5 sm:px-10">
             <h1 className="uppercase  font-zentry text-blue-75 text-5xl sm:right-10 sm:text-7xl md:text-9xl lg:text-[8rem]">
-              redefi<b>n</b>e
+              REDEFI<b>N</b>E
             </h1>
 
             <p className="mb-5 max-w-64 font-robert-regular text-blue-100">
@@ -107,9 +147,7 @@ ref={nextVref}
           </div>
         </div>
       </div>  
-  <h1 className=" absolute bottom-5 right-5  text-black uppercase font-zentry font-black text-5xl sm:right-10 sm:text-7xl md:text-9xl lg:text-[8rem]">
-          G<b>A</b>MING
-        </h1>
+   <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">G<b>A</b>MING</h1>
 
     </div>
   );
