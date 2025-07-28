@@ -11,30 +11,33 @@ export const Hero = () => {
   const [videoIndex, setVideoIndex] = useState(1);
   const [hasClicked, setHasClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadedVideos, setLoadedVideos] = useState(0);
-  const totalVideos =4;
+  const [currentVideoLoaded, setCurrentVideoLoaded] = useState(false);
+  const totalVideos = 4;
   const nextVref = useRef(null);
 
 
   const upcomingVideoIndex= (videoIndex % totalVideos) + 1;
-const handelvideoload=()=>{
 
-setLoadedVideos((prev) => prev + 1);
+  const handleCurrentVideoLoad = () => {
+    setCurrentVideoLoaded(true);
+    setIsLoading(false);
+  };
 
-}
+  const handleVideoLoad = () => {
+    // This handles loading of preview videos (non-blocking)
+  };
 
   const handleClick = () => {
     setHasClicked(true);
     setVideoIndex(upcomingVideoIndex);
   };
 
-
-  useEffect(()=>{
-    if(loadedVideos === totalVideos-1){
-      setIsLoading(false);
+  useEffect(() => {
+    // Reset loading state when video index changes
+    if (!currentVideoLoaded) {
+      setIsLoading(true);
     }
-
-  },[loadedVideos])
+  }, [videoIndex, currentVideoLoaded]);
 
   const getVideoSrc = (index) => `videos/hero-${index}.mp4`;
 
@@ -101,7 +104,7 @@ scrub: true,
       <div id="video-frame" className="relative z-10 h-dvh w-screen overflow-hidden  bg-blue-75">
         <div>
           <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
-            <div onClick={handleClick} className="origin-center scale-50 opacity-0 transition-all duretion-500 ease-in hover:scale-100 hover:opacity-100">
+            <div onClick={handleClick} className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100">
            <video
                   ref={nextVref}
                   src={getVideoSrc((videoIndex % totalVideos) + 1)}
@@ -109,7 +112,8 @@ scrub: true,
                   muted
                   id="current-video"
                   className="size-64 origin-center scale-150 object-cover object-center"
-                  onLoadedData={handelvideoload}
+                  onLoadedData={handleVideoLoad}
+                  preload="metadata"
                 />
             </div>
           </div>
@@ -120,7 +124,8 @@ ref={nextVref}
     muted
     id="next-video"
     className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
-    onLoadedData={handelvideoload}
+    onLoadedData={handleVideoLoad}
+    preload="metadata"
     />
     <video
     
@@ -129,7 +134,8 @@ ref={nextVref}
     loop
     muted
     className="absolute left-0 top-0 size-full object-cover object-center"
-    onLoadedData={handelvideoload}
+    onLoadedData={handleCurrentVideoLoad}
+    preload="auto"
     />
     
         </div>
