@@ -11,17 +11,11 @@ export const Hero = () => {
   const [videoIndex, setVideoIndex] = useState(1);
   const [hasClicked, setHasClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentVideoLoaded, setCurrentVideoLoaded] = useState(false);
   const totalVideos = 4;
   const nextVref = useRef(null);
 
 
   const upcomingVideoIndex= (videoIndex % totalVideos) + 1;
-
-  const handleCurrentVideoLoad = () => {
-    setCurrentVideoLoaded(true);
-    setIsLoading(false);
-  };
 
   const handleVideoLoad = () => {
     // This handles loading of preview videos (non-blocking)
@@ -33,11 +27,13 @@ export const Hero = () => {
   };
 
   useEffect(() => {
-    // Reset loading state when video index changes
-    if (!currentVideoLoaded) {
-      setIsLoading(true);
-    }
-  }, [videoIndex, currentVideoLoaded]);
+    // Set loader timeout to 10 seconds
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const getVideoSrc = (index) => `videos/hero-${index}.mp4`;
 
@@ -134,7 +130,6 @@ ref={nextVref}
     loop
     muted
     className="absolute left-0 top-0 size-full object-cover object-center"
-    onLoadedData={handleCurrentVideoLoad}
     preload="auto"
     />
     
